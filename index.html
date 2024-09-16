@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exemplo de XMLHttpRequest</title>
+    <title>Exemplo de XMLHttpRequest com Formulário de Pesquisa</title>
 </head>
 <body>
-    <button id="buscarDados">Buscar Produtos</button>
+    <h1>Buscar Produtos</h1>
+    
+    
+    <form id="formPesquisa">
+        <input type="text" id="termoPesquisa" placeholder="Digite o nome do produto" />
+        <button type="submit">Pesquisar</button>
+    </form>
+    
+    
+    <button id="buscarDados">Buscar Todos os Produtos</button>
+    
+    
     <div id="listaProdutos"></div>
 
     <script>
         let xhr = new XMLHttpRequest();
+        
+        
         document.getElementById('buscarDados').addEventListener('click', function() {
             xhr.open('GET', 'https://api.exemplo.com/produtos', true);
             xhr.onreadystatechange = function() {
@@ -25,6 +38,29 @@
             xhr.send();
         });
 
+        
+        document.getElementById('formPesquisa').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            let termo = document.getElementById('termoPesquisa').value;
+
+            if (termo.trim() !== "") {
+                xhr.open('GET', `https://api.exemplo.com/produtos?nome=${encodeURIComponent(termo)}`, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        let dados = JSON.parse(xhr.responseText);
+                        document.getElementById('listaProdutos').innerHTML = renderizarProdutos(dados);
+                    }
+                };
+                xhr.onerror = function() {
+                    console.error('Erro ao realizar a requisição.');
+                };
+                xhr.send();
+            } else {
+                alert('Por favor, insira um termo de pesquisa.');
+            }
+        });
+
+       
         function renderizarProdutos(dados) {
             
             return dados.map(produto => `<p>${produto.nome}</p>`).join('');
@@ -32,3 +68,4 @@
     </script>
 </body>
 </html>
+
