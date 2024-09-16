@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo de XMLHttpRequest</title>
+</head>
+<body>
+    <button id="buscarDados">Buscar Produtos</button>
+    <div id="listaProdutos"></div>
+
+    <script>
+        let xhr = new XMLHttpRequest();
+        document.getElementById('buscarDados').addEventListener('click', function() {
+            xhr.open('GET', 'https://api.exemplo.com/produtos', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let dados = JSON.parse(xhr.responseText);
+                    document.getElementById('listaProdutos').innerHTML = renderizarProdutos(dados);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Erro ao realizar a requisição.');
+            };
+            xhr.send();
+        });
+
+        function renderizarProdutos(dados) {
+            
+            return dados.map(produto => `<p>${produto.nome}</p>`).join('');
+        }
+    </script>
+</body>
+</html>
